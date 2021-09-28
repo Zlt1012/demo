@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>产品介绍</title>
+  <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+  <style>
+    .content {
+      width: 80%;
+      margin: 100px auto auto auto;
+      font-size: 24px;
+    }
+
+    .content input {
+      height: 60px;
+      width: 500px;
+      font-size: 24px;
+
+    }
+
+    p {
+      margin: 50px 0;
+    }
+
+    .content span {
+      width: 140px;
+      display: inline-block;
+      text-align: right;
+      margin-right: 20px;
+    }
+  </style>
+
+  <style type="text/css">
+    * {
+      margin: 0;
+      padding: 0;
+      list-style-type: none;
+    }
+
+    a,
+    img {
+      border: 0;
+    }
+
+    .demo {
+      margin: 100px auto 0 auto;
+      width: 400px;
+      text-align: center;
+      font-size: 24px;
+    }
+
+    .demo .action {
+      color: #3366cc;
+      text-decoration: none;
+      font-family: "微软雅黑", "宋体";
+    }
+
+    .overlay {
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 998;
+      width: 100%;
+      height: 100%;
+      _padding: 0 20px 0 0;
+      background: #f6f4f5;
+      display: none;
+    }
+
+    .showbox {
+      position: fixed;
+      top: 0;
+      left: 50%;
+      z-index: 9999;
+      opacity: 0;
+      filter: alpha(opacity=0);
+      margin-left: -80px;
+    }
+
+    *html,
+    *html body {
+      background-image: url(about:blank);
+      background-attachment: fixed;
+    }
+
+    *html .showbox,
+    *html .overlay {
+      position: absolute;
+      top: expression(eval(document.documentElement.scrollTop));
+    }
+
+    #AjaxLoading {
+      border: 1px solid #8CBEDA;
+      color: #37a;
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    /* #AjaxLoading div.loadingWord {
+      width: 180px;
+      height: 50px;
+      line-height: 50px;
+      border: 2px solid #D6E7F2;
+      background: #fff;
+    } */
+
+    /* #AjaxLoading img {
+      margin: 10px 15px;
+      float: left;
+      display: inline;
+    } */
+  </style>
+</head>
+
+<body>
+  <div class="loading">
+    <div class="overlay"></div>
+    <div id="AjaxLoading" class="showbox">
+      <div class="loadingWord">加载中，请稍候...</div>
+    </div>
+  </div>
+
+  <div id="content" class="content">
+    <p>
+      <tr>
+        <td>
+          <span>
+            产品序列号:
+          </span>
+        </td>
+        <td><input id="serialNo" name="?serialNo" type="text" disabled></td>
+      </tr>
+    </p>
+    <p>
+
+      <tr>
+        <td>
+          <span>产品描述:</span>
+        </td>
+        <td><input id="serialDesc" name="serialDesc" type="text" disabled></td>
+      </tr>
+    </p>
+    <p>
+      <tr>
+        <td>
+          <span>品牌:</span>
+
+        </td>
+        <td><input id="itemBrandName" name="itemBrandName" type="text" disabled></td>
+      </tr>
+    </p>
+    <p>
+      <tr>
+        <td>
+          <span>机型名称:</span>
+
+        </td>
+        <td><input id="spe" name="spe" type="text" disabled></td>
+      </tr>
+    </p>
+    <p>
+      <tr>
+        <td>
+          <span>生产日期:</span>
+
+        </td>
+        <td><input id="manuDate" name="manuDate" type="text" disabled></td>
+      </tr>
+    </p>
+    <p>
+      <tr>
+        <td>
+          <span>保修时长:</span>
+
+        </td>
+        <td><input id="guaranteeDays" name="guaranteeDays" type="text" disabled></td>
+      </tr>
+    </p>
+  </div>
+
+  <script>
+
+
+
+    // loading 代码
+    function ShowLoading() {
+
+      $(".overlay").css({ 'display': 'block', 'opacity': '0.8' });
+
+      $(".showbox").stop(true).animate({ 'margin-top': '300px', 'opacity': '1' }, 200);
+
+    }
+
+    function HiddenLoading() {
+
+      $(".showbox").stop(true).animate({ 'margin-top': '250px', 'opacity': '0' }, 400);
+
+      $(".overlay").css({ 'display': 'none', 'opacity': '0' });
+
+    }
+    // loading 代码 end
+
+
+    const search = window.location.search
+    const searchList = search.split('&')
+
+    const data = {}
+    searchList.forEach(element => {
+      const val = element.slice(element.indexOf("=") + 1)
+      const key = element.slice(0, element.indexOf("=")).replace("?", "")
+      data[key] = decodeURIComponent(val)
+    })
+    console.log(data);
+
+    // Object.keys(data).forEach(val => {
+    //   $(`#${val}`).val((data[val]))
+    // })
+
+    this.ShowLoading()
+    $.ajax({
+      url: data.baseUrl + "/yst-srm/purSn/scanning",
+      type: "put",
+      data: JSON.stringify({ serialNo: data.serialNo }),
+      headers: {
+        'content-type': 'application/json'
+      },
+      success: function (result) {
+        HiddenLoading()
+        if (result.success) {
+          $(`#serialNo`).val((result.data.serialNo))
+          $(`#serialDesc`).val((result.data.serialDesc))
+          $(`#itemBrandName`).val((result.data.itemBrandName))
+          $(`#spe`).val((result.data.spe))
+          $(`#manuDate`).val((result.data.manuDate))
+          $(`#guaranteeDays`).val((result.data.guaranteeDays))
+        } else {
+          alert(result.msg);
+        }
+
+      },
+      error: function (XMLHttpRequest, textStatus, errorThrown) {
+        HiddenLoading()
+        alert('获取二维码信息失败！');
+      }
+    })
+
+
+  </script>
+</body>
+
+</html>
