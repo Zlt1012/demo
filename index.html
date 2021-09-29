@@ -140,7 +140,7 @@
         <td>
           <span>产品描述:</span>
         </td>
-        <td><input id="serialDesc" name="serialDesc" type="text" disabled></td>
+        <td><input id="itemName" name="itemName" type="text" disabled></td>
       </tr>
     </p>
     <p>
@@ -158,7 +158,7 @@
           <span>机型名称:</span>
 
         </td>
-        <td><input id="spe" name="spe" type="text" disabled></td>
+        <td><input id="spec" name="spec" type="text" disabled></td>
       </tr>
     </p>
     <p>
@@ -221,7 +221,8 @@
 
     this.ShowLoading()
     $.ajax({
-      url: data.baseUrl + "/yst-srm/purSn/scanning",
+      url: "https://" + 'nrp-dev.elitescloud.com' + "/yst/srm/purSn/scanning",
+      // url: "https://" + window.location.host + "/yst/srm/purSn/scanning",
       type: "put",
       data: JSON.stringify({ serialNo: data.serialNo }),
       headers: {
@@ -231,10 +232,10 @@
         HiddenLoading()
         if (result.success) {
           $(`#serialNo`).val((result.data.serialNo))
-          $(`#serialDesc`).val((result.data.serialDesc))
+          $(`#itemName`).val((result.data.itemName))
           $(`#itemBrandName`).val((result.data.itemBrandName))
-          $(`#spe`).val((result.data.spe))
-          $(`#manuDate`).val((result.data.manuDate))
+          $(`#spec`).val((result.data.spec))
+          $(`#manuDate`).val(result.data.manuDate.substring(0, result.data.manuDate.indexOf(" ")))
           $(`#guaranteeDays`).val((result.data.guaranteeDays))
         } else {
           alert(result.msg);
